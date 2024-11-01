@@ -182,7 +182,6 @@
         </div>
       </div>
     </nav>
-    <a href="{{route('photo.index')}}" class="btn-sm btn btn-primary">ForYou<a>
         <div class="container mt-5">
           <div class="card" style="border-radius: 15px;">
             <div class="card-body">
@@ -192,50 +191,50 @@
                 </div>
                 <div class="col-6">
                   <div class="like-section mt-5">
-                    <h4 class="fw-bold">Likes</h4>
-
-                    <button class="like-button" data-photo-id="{{ $photos->id }}" id="likeButton-{{ $photos->id }}">
-                      ❤️ Like
-                    </button>
-                    <span id="likeCount-{{ $photos->id }}">{{ $photos->likes->count() }}</span> Likes
-                  </div>
-                  <div class="d-flex">
-                    <h3 class="fw-bold">Title:</h3>
-                    <p class="mt-2 ps-3">{{$photos->title}}</p>
-                  </div>
-                  <div class="d-flex">
-                    <h3 class="fw-bold">Description:</h3>
-                    <p class="mt-2 ps-3">{{$photos->desc}}</p>
-                  </div>
-                  <h5>Total Comments: {{ $photos->comments_count }}</h5>
-                  <form method="POST" action="{{ route('comments.add', $photos->id) }}">
-                    @csrf
-                    <div class="form-group ">
-                      <input type="text" class="form-control" style="border-radius:90px;" placeholder="Write a comment..." name="newComment" required>
-                      @error('newComment')
-                      <span class="text-danger">{{ $message }}</span>
-                      @enderror
-                      <button type="submit" class=" btn btn-primary mt-2">Comment</button>
+                      <i id="like-icon"
+                        class="bi bi-heart {{ $likedByUser ? 'text-danger' : 'text-muted' }}"
+                        onclick="toggleLike('{{ $photos->id }}')"
+                        style="cursor: pointer; font-size: 24px;"></i>
+                      <span id="like-count">{{ $photos->likes->count() }} likes</span>
                     </div>
-                  </form>
-                  <ul class="list-group mt-4">
-                    @if($photos->comments->isNotEmpty())
-                    @foreach($photos->comments as $comment)
-                    <li class="list-group-item">
-                      <div class="d-flex">
-                        @foreach($dp as $dps)
-                        <img src="{{ asset($dps->filepath) }}" alt="no dp" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
-                        @endforeach
-                        <strong style="font-size: medium;" class="mt-3">{{ $comment->user->name }}</strong>
-                        <p class="mt-3 ms-4">{{ $comment->content }}</p>
+                    <div class="d-flex">
+                      <h3 class="fw-bold">Title:</h3>
+                      <p class="mt-2 ps-3">{{$photos->title}}</p>
+                    </div>
+                    <div class="d-flex">
+                      <h3 class="fw-bold">Description:</h3>
+                      <p class="mt-2 ps-3">{{$photos->desc}}</p>
+                    </div>
+                    <h5>Total Comments: {{ $photos->comments_count }}</h5>
+                    <form method="POST" action="{{ route('comments.add', $photos->id) }}">
+                      @csrf
+                      <div class="form-group ">
+                        <input type="text" class="form-control" style="border-radius:90px;" placeholder="Write a comment..." name="newComment" required>
+                        @error('newComment')
+                        <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                        <button type="submit" class=" btn btn-primary mt-2">Comment</button>
                       </div>
-                      <small class="text-muted" style="font-size: 14px;">{{ $comment->created_at->diffForHumans() }}</small>
-                    </li>
-                    @endforeach
-                    @else
-                    <li>No comments found.</li>
-                    @endif
-                  </ul>
+                    </form>
+                    <ul class="list-group mt-4">
+                      @if($photos->comments->isNotEmpty())
+                      @foreach($photos->comments as $comment)
+                      <li class="list-group-item">
+                        <div class="d-flex">
+                          @foreach($dp as $dps)
+                          <img src="{{ asset($dps->filepath) }}" alt="no dp" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+                          @endforeach
+                          <strong style="font-size: medium;" class="mt-3">{{ $comment->user->name }}</strong>
+                          <p class="mt-3 ms-4">{{ $comment->content }}</p>
+                        </div>
+                        <small class="text-muted" style="font-size: 14px;">{{ $comment->created_at->diffForHumans() }}</small>
+                      </li>
+                      @endforeach
+                      @else
+                      <li>No comments found.</li>
+                      @endif
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -243,37 +242,31 @@
         </div>
   </div>
   </div>
-  </div>
-
   <script>
-    document.querySelectorAll('.like-button').forEach(button => {
-      button.addEventListener('click', () => {
-        const photoId = button.dataset.photoId;
+    function toggleLike(photoId) {
+      axios.post(`/photos/${photoId}/like`)
+        .then(response => {
+          const likeButton = document.getElementById('like-button');
+          const likeCount = document.getElementById('like-count');
 
-        fetch(`/photo/${photoId}/like`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-          })
-          .then(response => response.json())
-          .then(data => {
-            // Update the like count in the UI
-            document.getElementById(`likeCount-${photoId}`).textContent = data.likeCount;
+          // Update the button text and like count
+          if (likeButton.textContent === 'Like') {
+            likeButton.textContent = 'Unlike';
+          } else {
+            likeButton.textContent = 'Like';
+          }
 
-            // Toggle the liked state
-            if (data.liked) {
-              button.classList.add('liked');
-            } else {
-              button.classList.remove('liked');
-            }
-          })
-          .catch(error => console.error('Error:', error));
-      });
-    });
+          // Update the like count
+          let count = parseInt(likeCount.textContent) || 0;
+          likeCount.textContent = (likeButton.textContent === 'Unlike') ? count + 1 : count - 1;
+          alert(response.data.message);
+        })
+        .catch(error => {
+          console.error(error);
+          alert('An error occurred.');
+        });
+    }
   </script>
-
 
 </body>
 

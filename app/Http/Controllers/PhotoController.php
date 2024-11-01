@@ -9,6 +9,7 @@ use App\Http\Requests\StorePhotoRequest;
 use App\Http\Requests\UpdatePhotoRequest;
 use App\Models\Comment;
 use App\Models\Dp; // Assuming this is the model for user profile pictures
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class PhotoController extends Controller
@@ -16,8 +17,8 @@ class PhotoController extends Controller
     // Display a listing of the resource.
     public function index()
     {
-        $photos = Photo::all()->shuffle();
-    $dp = Dp::all(); // Assuming this contains user profile pictures
+        $photos = Photo::with('likes')->get()->shuffle();
+        $dp = Dp::all(); // Assuming this contains user profile pictures
         return view('photo.index', compact('photos', 'dp'));
     }
 
@@ -59,14 +60,15 @@ class PhotoController extends Controller
     }
     public function show($photoId)
     {
-        $photo = Photo::with(['comments.user', 'likes'])->findOrFail($photoId);
-        $user = auth()->user();
-        $likedByUser = $photo->likes->contains('user_id', $user->id); // Check if current user liked this photo
-    
-        return view('photo.show', compact('photo', 'user', 'likedByUser'));
+        $photos = Photo::with(['comments.user', 'likes'])->findOrFail($photoId);
+        $user = Auth::user();
+        $dp =Dp::all();
+        $likedByUser = $photos->likes->contains('user_id',  $user->id);
+        return view('photo.show', compact('photos', 'user', 'dp', 'likedByUser'));
     }
-    
-   
+
+
+
     // Add a comment to a photo
     public function addComment(StorePhotoRequest $request, $photoId)
     {
@@ -85,35 +87,21 @@ class PhotoController extends Controller
 
     public function toggleLike($photoId)
     {
-        $user = auth()->user(); // Assumes user is authenticated
-    
-        // Check if the user already liked the photo
-        $existingLike = Like::where('photo_id', $photoId)
-                            ->where('user_id', $user->id)
-                            ->first();
-    
-        if ($existingLike) {
-            // If like exists, remove it (dislike)
-            $existingLike->delete();
-            $liked = false;
+        $user = auth()->user();
+
+        // Check if the like already exists
+        $like = Like::where('user_id', $user->id)->where('photo_id', $photoId)->first();
+
+        if ($like) {
+            // If the like exists, delete it (unlike)
+            $like->delete();
+            return response()->json(['message' => 'Photo unliked.']);
         } else {
-            // If not liked, add a new like
-            Like::create([
-                'photo_id' => $photoId,
-                'user_id' => $user->id,
-            ]);
-            $liked = true;
+            Like::create(['user_id' => $user->id, 'photo_id' => $photoId]);
+            return response()->json(['message' => 'Photo liked.']);
         }
-    
-        // Return the updated like count
-        $likeCount = Like::where('photo_id', $photoId)->count();
-    
-        return response()->json([
-            'liked' => $liked,
-            'likeCount' => $likeCount,
-        ]);
     }
-    
+
 
 
     // Show the form for editing the specified resource.

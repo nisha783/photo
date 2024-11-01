@@ -39,8 +39,6 @@ Route::resource('/photo', PhotoController::class)->middleware(['auth', 'verified
 Route::resource('/pf', ProfileManageController::class)->middleware(['auth', 'verified']);
 Route::resource('/dp', DpController::class)->middleware(['auth', 'verified']);
 Route::post('/photo/{photoId}/comments', [PhotoController::class, 'addComment'])->name('comments.add');
-Route::post('/photo/{photoId}/toggle-like', [PhotoController::class, 'toggleLike'])->name('photo.toggleLike');
-
-Route::post('/photo/{photo}/like', [PhotoController::class, 'toggleLike'])->name('photo.like');
+Route::post('/photos/{photoId}/like', [PhotoController::class, 'toggleLike'])->middleware('auth');
 
 require __DIR__ . '/auth.php';
