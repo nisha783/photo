@@ -20,3 +20,4 @@ class Like extends Model
         return $this->belongsTo(Photo::class);
     }
 }
+

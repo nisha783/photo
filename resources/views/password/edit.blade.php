@@ -149,9 +149,18 @@
         <li class="ps-4 "><a href="{{route('photo.create')}}" class="text-decoration-none" style="color:#fff;">Create</a></li>
         <li class="ps-4 "><a href="{{route('pf.index')}}" class="text-decoration-none" style="color:#fff;">Profile</a></li>
       </ul>
-      @foreach($dp as $dps)
-      <img src="{{ asset($dps->filepath) }}" alt="no dp" class="rounded-circle px-1 py-2 ms-1" style="height:10vh;width:9vh;">
-      @endforeach
+      @forelse($dp as $dps)
+      @if($dps->user_id == Auth::id())
+      <!-- Display the profile picture for the current user -->
+      <img src="{{ asset($dps->filepath) }}" alt="profile picture" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @else
+      <!-- Default profile icon when the profile picture is not for the current user -->
+      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @endif
+      @empty
+       <!-- No profile picture uploaded -->
+       <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @endforelse
       <div class="sub-menu-wrap" id="subMenu">
         <div class="sub-menu">
           <div class="user-info">

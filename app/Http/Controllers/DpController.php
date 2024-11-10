@@ -7,6 +7,7 @@ use App\Http\Requests\StoredpRequest;
 use App\Http\Requests\UpdatedpRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+
 class DpController extends Controller
 {
     /**
@@ -15,8 +16,8 @@ class DpController extends Controller
     public function index()
     {
         //
-        $dp=dp::all();
-        return view('dp.index',compact('dp'));
+        $dp = dp::all();
+        return view('dp.index', compact('dp'));
     }
 
     /**
@@ -31,44 +32,40 @@ class DpController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(StoredpRequest $request)
-{
-    $validator = Validator::make($request->all(), [
-        'dp' => 'required|image',
-    ]);
-    
-    if ($validator->fails()) {
-        return redirect()->back()
-            ->withErrors($validator)
-            ->withInput();
-    }
-    
-    // Step 2: Handle the file upload
-    $dp = Dp::first(); 
-    
-    if ($dp && $dp->filepath) {
-        Storage::disk('public')->delete($dp->filepath);
-    }
-    
-    if ($request->hasFile('dp')) {
-        $filepath = $request->file('dp')->store('photos', 'public');
-        
-        $userId = auth()->id(); // Make sure user is authenticated
-    
-        if ($dp) {
-            $dp->filepath = $filepath;
-            $dp->user_id = $userId; // Update user_id
-            $dp->save();
-        } else {
-            // Create a new record if none exists
-            $dp = new Dp();
-            $dp->filepath = $filepath;
-            $dp->user_id = $userId; // Set user_id for the new record
-            $dp->save();
+    {
+        $validator = Validator::make($request->all(), [
+            'dp' => 'required|image',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
         }
+
+        if ($request->hasFile('dp')) {
+            $dp = Dp::where('user_id', auth()->id())->first();
+
+            if ($dp && $dp->filepath) {
+                Storage::disk('public')->delete($dp->filepath);
+            }
+
+            $filepath = $request->file('dp')->store('photos', 'public');
+
+            if ($dp) {
+                $dp->filepath = $filepath;
+                $dp->save();
+            } else {
+                $dp = new Dp();
+                $dp->filepath = $filepath;
+                $dp->user_id = auth()->id();
+                $dp->save();
+            }
+        }
+
+        return redirect()->route('photo.index')->with('success', 'Profile picture updated successfully.');
     }
-    
-    return redirect()->route('photo.index')->with('success', 'Photo created successfully.');
-}    
+
 
     /**
      * Display the specified resource.
@@ -97,8 +94,11 @@ class DpController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(dp $dp)
+    public function destroy(dp $dp, $id)
     {
         //
+        $dp->delete();
+
+        return redirect()->route('photo.index')->with('success', 'deleted successfully.');
     }
 }

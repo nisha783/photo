@@ -18,4 +18,16 @@ class Photo extends Model
     {
         return $this->hasMany(Like::class);
     }
+    public function getCommentsCountAttribute()
+    {
+        return $this->comments()->count();
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function dp()
+    {
+        return $this->belongsTo(Dp::class, 'user_id');
+    }
 }

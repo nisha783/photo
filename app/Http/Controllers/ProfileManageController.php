@@ -18,7 +18,8 @@ class ProfileManageController extends Controller
         //
         $photos=Photo::all();
         $dp=dp::all();
-        return view('pf.index',compact('photos','dp'));
+        $photos=Photo::all();
+        return view('pf.index',compact('photos','dp','photos'));
     }
 
     /**

@@ -8,17 +8,18 @@ use App\Models\User;
 use App\Http\Requests\StorePhotoRequest;
 use App\Http\Requests\UpdatePhotoRequest;
 use App\Models\Comment;
-use App\Models\Dp; // Assuming this is the model for user profile pictures
+use App\Models\Dp;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class PhotoController extends Controller
 {
-    // Display a listing of the resource.
     public function index()
     {
-        $photos = Photo::with('likes')->get()->shuffle();
-        $dp = Dp::all(); // Assuming this contains user profile pictures
+
+        $photos = Photo::with('user.dp')->get();
+        $dp = Dp::all();
         return view('photo.index', compact('photos', 'dp'));
     }
 
@@ -46,28 +47,30 @@ class PhotoController extends Controller
 
         // Handle the file upload
         if ($request->hasFile('photo')) {
-            $filepath = $request->file('photo')->store('photos', 'public');
+            $filepath = $request->file('photo')->store('img', 'public');
 
             // Create a new photo
             $photo = new Photo();
             $photo->filepath = $filepath;
             $photo->title = $request->input('title');
             $photo->desc = $request->input('desc');
+            $photo->user_id = Auth::id();
             $photo->save();
         }
 
         return redirect()->route('photo.index')->with('success', 'Photo created successfully.');
     }
+
+
+
     public function show($photoId)
     {
         $photos = Photo::with(['comments.user', 'likes'])->findOrFail($photoId);
         $user = Auth::user();
-        $dp =Dp::all();
+        $dp = Dp::all();
         $likedByUser = $photos->likes->contains('user_id',  $user->id);
         return view('photo.show', compact('photos', 'user', 'dp', 'likedByUser'));
     }
-
-
 
     // Add a comment to a photo
     public function addComment(StorePhotoRequest $request, $photoId)
@@ -78,39 +81,47 @@ class PhotoController extends Controller
 
         Comment::create([
             'photo_id' => $photoId,
-            'user_id' => auth()->id(), // Assumes user is authenticated
+            'user_id' => auth()->id(),
             'content' => $request->newComment,
         ]);
 
         return redirect()->route('photo.show', $photoId);
     }
 
-    public function toggleLike($photoId)
+    public function toggleLike(Request $request, Photo $photo)
     {
-        $user = auth()->user();
+        //info("here");
+        $user = Auth()->user();
+        $user = Auth::user();
 
-        // Check if the like already exists
-        $like = Like::where('user_id', $user->id)->where('photo_id', $photoId)->first();
+        info("now saving new like");
+        // Check if the user already liked the photo
+        $like = $photo->likes()->where('user_id', $user->id)->first();
 
         if ($like) {
-            // If the like exists, delete it (unlike)
+            // info("User already cliked");
+            // Unlike if already liked
             $like->delete();
-            return response()->json(['message' => 'Photo unliked.']);
+            $liked = false;
         } else {
-            Like::create(['user_id' => $user->id, 'photo_id' => $photoId]);
-            return response()->json(['message' => 'Photo liked.']);
+            // info("User new like");
+            // Like if not liked
+            $photo->likes()->create(['user_id' => $user->id]);
+            $liked = true;
         }
+
+       // info("All Okay in controller");
+        return response()->json([
+            'liked' => $liked,
+            'likesCount' => $photo->likes()->count(),
+        ]);
     }
 
-
-
-    // Show the form for editing the specified resource.
     public function edit($id)
     {
         return view('photo.edit');
     }
 
-    // Update the specified resource in storage.
     public function update(UpdatePhotoRequest $request, Photo $photo)
     {
         //
@@ -122,6 +133,6 @@ class PhotoController extends Controller
         $photo = Photo::Where('id', $id)->first();
         $photo->delete();
 
-        return redirect()->route('photo.index')->with('success', 'Article deleted successfully.');
+        return redirect()->route('photo.index')->with('success', 'deleted successfully.');
     }
 }

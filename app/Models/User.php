@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable 
+class User extends Authenticatable
 // implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
@@ -48,9 +48,17 @@ class User extends Authenticatable
         ];
     }
 
-  
+
     public function likes()
     {
         return $this->hasMany(Like::class);
+    }
+    public function dp()
+    {
+        return $this->hasOne(dp::class);
+    }
+    public function photos()
+    {
+        return $this->hasMany(Photo::class); // Each user can upload multiple photos
     }
 }

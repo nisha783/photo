@@ -149,9 +149,15 @@
         <li class="ps-4 "><a href="{{route('photo.create')}}" class="text-decoration-none" style="color:#fff;">Create</a></li>
         <li class="ps-4 "><a href="{{route('pf.index')}}" class="text-decoration-none" style="color:#fff;">Profile</a></li>
       </ul>
-      @foreach($dp as $dps)
-      <img src="{{ asset($dps->filepath) }}" alt="helo" class="rounded-circle px-1 py-2 ms-1" style="height:11vh;width:10vh;">
-      @endforeach
+      @forelse($dp as $dps)
+      @if($dps->user_id == Auth::id())
+      <img src="{{ asset($dps->filepath) }}" alt="profile picture" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @else
+      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @endif
+      @empty
+      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @endforelse
       <div class="sub-menu-wrap" id="subMenu">
         <div class="sub-menu">
           <div class="user-info">
@@ -166,9 +172,15 @@
         <div class="col-lg-6" style="margin-left:400px;">
           <div class="mt-5   border-0">
             <div class="d-flex">
-              @foreach($dp as $dps)
-              <img src="{{ asset($dps->filepath) }}" alt="no dp" class="rounded-circle" style="height:10vh;width:9vh;">
-              @endforeach
+              @forelse($dp as $dps)
+              @if($dps->user_id == Auth::id())
+              <img src="{{ asset($dps->filepath) }}" alt="profile picture" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+              @else
+              <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+              @endif
+              @empty
+              <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+              @endforelse
               <h3 class="fs-1  text-grey">{{auth()->user()->name}}</h3>
             </div>
             <p class="text-grey px-3" style="margin-left:60px;">{{auth()->user()->email}}</p>
@@ -222,6 +234,8 @@
           </div>
         </div>
       </div>
+      <hr>
+     
 </body>
 
 </html>

@@ -144,13 +144,18 @@
         <li class="ps-4 "><a href="{{route('photo.create')}}" class="text-decoration-none" style="color:#fff;">Create</a></li>
         <li class="ps-4 "><a href="{{route('pf.index')}}" class="text-decoration-none" style="color:#fff;">Profile</a></li>
       </ul>
-      @foreach($dp as $dps)
-      <img src="{{ $dps->filepath ? asset('storage/' . $dps->filepath) : asset('images/.png') }}"
-        alt="Profile Picture"
-        class="rounded-circle px-1 py-2 ms-1"
-        style="height:10vh; width:9vh;">
-      @endforeach
-
+      @forelse($dp as $dps)
+      @if($dps->user_id == Auth::id())
+      <!-- Display the profile picture for the current user -->
+      <img src="{{ asset($dps->filepath) }}" alt="profile picture" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @else
+      <!-- Default profile icon when the profile picture is not for the current user -->
+      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @endif
+      @empty
+      <!-- No profile picture uploaded -->
+      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @endforelse
       <div class="sub-menu-wrap" id="subMenu">
         <div class="sub-menu">
           <div class="user-info">
@@ -164,11 +169,26 @@
       <div class="box">
         @foreach($photos as $photo)
         <div class="photo-item">
-          <a href="{{route('photo.show', $photo->id)}}" class="photo-link">
+          <!-- Displaying the Photo -->
+          <a href="{{ route('photo.show', $photo->id) }}" class="photo-link">
             <img src="{{ asset($photo->filepath) }}" alt="{{ $photo->title }}" class="img-fluid" style="margin-top:20px;">
           </a>
+          @php
+          $userProfile = $photo->user->dp()->first();
+          @endphp
+          <div class="profile-picture mt-3 text-center">
+            @if($userProfile)
+            <div class="d-flex">
+              <img src="{{ asset($userProfile->filepath) }}" alt="{{ $photo->user->name }}'s profile" class="rounded-circle" style="height:7vh; width:6vh;">
+              @else
+              <img src="{{ asset('img/1.jpg.png') }}" alt="Default profile icon" class="rounded-circle" style="height:7vh; width:6vh;">
+              @endif
+              <p class="m-2 " style="font-size: 15px; color:#1a1a1a;">{{ $photo->user->name }}</p>
+            </div>
+          </div>
+          @endforeach
+
         </div>
-        @endforeach
       </div>
     </div>
 </body>
