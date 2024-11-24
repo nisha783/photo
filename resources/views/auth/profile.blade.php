@@ -143,18 +143,21 @@
 <body>
   <div class="hero">
     <nav class="bg-dark sticky">
-      <i class="mt-2 fw-bold" style="font-size:20px; color:#fff;">PhotoCollection</i>
+      <i class="mt-2" style="font-size:20px; color:#fff;">PhotoCollection</i>
       <ul class="mt-3">
-        <li class="ps-4 "><a href="{{route('photo.index')}}"  class=" fw-bold text-decoration-none" style="color:#fff;">Home</a></li>
-        <li class="ps-4 "><a href="{{route('photo.create')}}" class=" fw-bold text-decoration-none" style="color:#fff;">Create</a></li>
-        <li class="ps-4 "><a href="{{route('pf.index')}}"     class=" fw-bold text-decoration-none" style="color:#fff;">Profile</a></li>
-        <li class="ps-4"><a href="{{ route('user.photos') }}" class=" fw-bold text-decoration-none" style="color:#fff;">My Photos</a></li>
+        <li class="ps-4 "><a href="{{route('photo.index')}}" class="text-decoration-none" style="color:#fff;">Home</a></li>
+        <li class="ps-4 "><a href="{{route('photo.create')}}" class="text-decoration-none" style="color:#fff;">Create</a></li>
+        <li class="ps-4 "><a href="{{route('pf.index')}}" class="text-decoration-none" style="color:#fff;">Profile</a></li>
       </ul>
-      @if(Auth::user()->filepath)
-      <img src="{{ asset('storage/' . Auth::user()->filepath) }}" alt="Profile Picture" class="rounded-circle m-2" style="height:7vh;width:9vh;">
+      @forelse($dp as $dps)
+      @if($dps->user_id == Auth::id())
+      <img src="{{ asset($dps->filepath) }}" alt="profile picture" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
       @else
-      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle m-2 profile-img" style="height:7vh;width:9vh;">
+      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
       @endif
+      @empty
+      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @endforelse
       <div class="sub-menu-wrap" id="subMenu">
         <div class="sub-menu">
           <div class="user-info">
@@ -168,17 +171,19 @@
       <div class="row justify-content-center align-items-center min-vh-50 auto">
         <div class="col-lg-6" style="margin-left:400px;">
           <div class="mt-5   border-0">
-            <div class="">
-              @if(Auth::user()->filepath)
-              <img src="{{ asset('storage/' . Auth::user()->filepath) }}" alt="Profile Picture" class="rounded-circle" style="height:21vh;width:23vh;">
+            <div class="d-flex">
+              @forelse($dp as $dps)
+              @if($dps->user_id == Auth::id())
+              <img src="{{ asset($dps->filepath) }}" alt="profile picture" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
               @else
-              <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle m-2 profile-img" style="height:21vh;width:23vh;">
+              <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
               @endif
+              @empty
+              <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+              @endforelse
+              <h3 class="fs-1  text-grey">{{auth()->user()->name}}</h3>
             </div>
-            <div class="">
-              <i class=" fw-bold px-5">{{auth()->user()->name}}</i>
-              <p class="text-grey px-5">{{auth()->user()->email}}</p>
-            </div>
+            <p class="text-grey px-3" style="margin-left:60px;">{{auth()->user()->email}}</p>
             <a href="{{route('profil.edit')}}" class="btn btn-light px-3" style="border-radius:40px;">Edit Profile</a>
             <a href="{{route('password.edit')}}" class="btn btn-light px-3" style="border-radius:40px;"> Change Password</a>
             <div class="d-flex mt-3">
@@ -205,7 +210,7 @@
                       @if(session('error'))
                       <div>{{ session('error') }}</div>
                       @endif
-                      <form action="{{route('dp.store')}}" method="post" enctype="multipart/form-data">
+                      <form action="{{route('profile.submit')}}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="text-center">
                           <h3>Click to Upload Profile</h3>
@@ -229,7 +234,8 @@
           </div>
         </div>
       </div>
-
+      <hr>
+     
 </body>
 
 </html>

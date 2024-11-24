@@ -10,18 +10,6 @@
   <link href="{{ asset('css/style.css') }}" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <style>
-    nav.sticky {
-      position: sticky;
-      top: 0;
-      padding: 5px;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     .hero {
       width: 100%;
       min-height: 100vh;
@@ -32,259 +20,156 @@
     nav {
       background-color: #1a1a1a;
       width: 100%;
-      padding: 10px 10%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
     }
 
-    .logo {
-      width: 50px;
-      border-radius: 70%;
-      cursor: pointer;
-      margin-left: 30px;
-
-    }
-
-    nav ul {
-      width: 100%;
-      text-align: right;
-
-    }
-
-    nav ul li {
-      display: inline-block;
-      list-style: none;
-    }
-
-    nav ul li {
-      color: #fff;
-      text-decoration: none;
-    }
-
-    nav i {
-      margin-left: 40px;
-    }
-
-    .sub-menu-wrap {
-      position: absolute;
-      top: 100px;
-      right: 10px;
-      max-height: 0px;
-      width: 320px;
-      overflow: hidden;
-      transition: max-height 0.5s;
-    }
-
-    .sub-menu-wrap.open-menu {
-      max-height: 400px;
-    }
-
-    .sub-menu {
-      background-color: #fff;
-      padding: 20px;
-      margin: 10px;
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-    }
-
-    .container-fluid {
-      width: 1400px;
-      margin: 20px auto;
-      columns: 5;
-      column-gap: 40px;
-      margin-bottom: 20px;
-    }
-
-    .container-fluid.box {
-      width: 100px;
-    }
-
-    .container-fluid.box img {
-      max-width: 100%;
-      border-radius: 15px;
-    }
-
-    .photo-link {
-
-      display: inline-block;
-      /* Adjusts spacing around images */
-    }
-
-    .photo-link img {
-      transition: opacity 0.3s ease;
-      /* Smooth transition for the opacity */
-    }
-
-    .photo-link:hover img {
-      opacity: 0.5;
-      /* Decrease opacity on hover */
-    }
-
-    .photo-link:before {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0, 0, 0, 0.6);
-      transition: opacity 0.1s ease;
-    }
-
-    .photo-link:hover:before {
-      opacity: 3;
+    .navbar-brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
     }
 
     .like-section i {
       font-size: 24px;
       cursor: pointer;
       color: #ccc;
-      /* Default color */
-      margin-right: 5px;
       transition: color 0.3s ease;
     }
 
     .like-section i.liked {
       color: red;
-      /* Color when liked */
     }
 
-    .like-section {
-      display: flex;
-      align-items: center;
-      margin-top: 10px;
+    @media (max-width: 768px) {
+      .card img {
+        width: 100%;
+        height: auto;
+      }
+
+      .card-body {
+        padding: 15px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="hero">
-    <nav class="bg-dark sticky">
-      <i class="mt-2" style="font-size:20px; color:#fff;">PhotoCollection</i>
-      <ul class="mt-3">
-        <li class="ps-4 "><a href="{{route('photo.index')}}" class="text-decoration-none" style="color:#fff;">Home</a></li>
-        <li class="ps-4 "><a href="{{route('photo.create')}}" class="text-decoration-none" style="color:#fff;">Create</a></li>
-        <li class="ps-4 "><a href="{{route('pf.index')}}" class="text-decoration-none" style="color:#fff;">Profile</a></li>
-      </ul>
-
-      @forelse($dp as $dps)
-      @if($dps->user_id == Auth::id())
-      <!-- Display the profile picture for the current user -->
-      <img src="{{ asset($dps->filepath) }}" alt="profile picture" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
-      @else
-      <!-- Default profile icon when the profile picture is not for the current user -->
-      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
-      @endif
-      @empty
-      <!-- No profile picture uploaded -->
-      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
-      @endforelse
-      <div class="sub-menu-wrap" id="subMenu">
-        <div class="sub-menu">
-          <div class="user-info">
-            <img src="{{asset('img/images.jpg')}}" alt="pic" class="text-center logo">
-            <h3 class="text-center">Helo pic</h3>
+    <!-- Responsive Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+      <div class="container-fluid">
+        <i class="m-2 fw-bold" style="font-size:20px; color:#fff;">PhotoCollection</i>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-white" href="{{ route('photo.index') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-white" href="{{ route('photo.create') }}">Create</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-white" href="{{ route('pf.index') }}">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link fw-bold text-white" href="{{ route('user.photos') }}">My Photos</a>
+            </li>
+          </ul>
+          <div class="d-flex align-items-center">
+            @if(Auth::user()->filepath)
+            <img src="{{ asset('storage/' . Auth::user()->filepath) }}" alt="Profile Picture"
+              class="rounded-circle ms-3" style="height:40px;width:40px;">
+            @else
+            <img src="{{ asset('img/1.jpg.png') }}" alt="Default Profile Picture" class="rounded-circle ms-3"
+              style="height:40px;width:40px;">
+            @endif
           </div>
         </div>
       </div>
     </nav>
+
+    <!-- Responsive Card -->
     <div class="container mt-5">
       <div class="card" style="border-radius: 15px;">
-        <div class="card-body">
-          <div class="row">
-            <div class="col-6">
-              <img src="{{ asset($photos->filepath) }}" alt="" class="" style="height:70vh; width:80vh; border-radius: 15px;">
-            </div>
-            <div class="col-6">
-              <div class="like-section mt-5">
-                <i id="like-icon"
-                  class="bi bi-heart-fill {{ $likedByUser ? 'text-danger' : 'text-muted' }}"
-                  onclick="toggleLike('{{ $photos->id }}')"
-                  style="cursor: pointer; font-size: 24px;"></i>
+        <div class="row g-0">
+          <div class="col-lg-6 col-md-12">
+            <img src="{{ asset($photos->filepath) }}" alt="" class="img-fluid" style="border-radius: 15px;">
+          </div>
+          <div class="col-lg-6 col-md-12">
+            <div class="card-body">
+              <div class="like-section mb-3">
+                <i id="like-icon" class="bi bi-heart-fill {{ $likedByUser ? 'text-danger' : 'text-muted' }}"
+                  onclick="toggleLike('{{ $photos->id }}')"></i>
                 <span id="like-count">{{ $photos->likes->count() }} likes</span>
               </div>
-              <div class="d-flex">
-                <h3 class="fw-bold">Title:</h3>
-                <p class="mt-2 ps-3">{{$photos->title}}</p>
-              </div>
-              <div class="d-flex">
-                <h3 class="fw-bold">Description:</h3>
-                <p class="mt-2 ps-3">{{$photos->desc}}</p>
-              </div>
+              <h5 class="fw-bold">Title:</h5>
+              <p>{{$photos->title}}</p>
+              <h5 class="fw-bold">Description:</h5>
+              <p>{{$photos->desc}}</p>
               <h5>Total Comments: {{ $photos->comments_count}}</h5>
               <form method="POST" action="{{ route('comments.add', $photos->id) }}">
                 @csrf
-                <div class="form-group ">
-                  <input type="text" class="form-control" style="border-radius:90px;" placeholder="Write a comment..." name="newComment" required>
+                <div class="form-group">
+                  <input type="text" class="form-control" placeholder="Write a comment..." name="newComment" required>
                   @error('newComment')
                   <span class="text-danger">{{ $message }}</span>
                   @enderror
-                  <button type="submit" class=" btn btn-primary mt-2">Comment</button>
+                  <button type="submit" class="btn btn-primary mt-2">Comment</button>
                 </div>
               </form>
-              @if(session('success'))
-              <div class="alert alert-success">
-                {{ session('success') }}
-              </div>
-              @endif
-
-              @if(session('error'))
-              <div class="alert alert-danger">
-                {{ session('error') }}
-              </div>
-              @endif
               <ul class="list-group mt-4">
                 @if($photos->comments->isNotEmpty())
                 @foreach($photos->comments as $comment)
                 <li class="list-group-item">
-                  <div class="d-flex">
-                    @php
-                    // Check if the commenter has a profile image
-                    $commenterProfile = $dp->where('user_id', $comment->user_id)->first();
-                    @endphp
-
-                    @if($commenterProfile)
-                    <!-- Show the commenter's profile picture -->
-                    <img src="{{ asset($commenterProfile->filepath) }}" alt="profile picture" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+                  <div class="d-flex align-items-start">
+                    @if($comment->user && $comment->user->filepath)
+                    <a href="{{ route('job.index') }}" class="photo-link">
+                      <img src="{{ asset('storage/' . $comment->user->filepath) }}"
+                        alt="{{ $comment->user->name }}"
+                        class="rounded-circle m-2"
+                        style="height:7vh;width:9vh;">
+                    </a>
                     @else
-                    <!-- Show default profile icon if no profile picture is uploaded -->
-                    <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+                    <a href="{{ route('job.index') }}" class="photo-link">
+                      <img src="{{ asset('img/1.jpg.png') }}"
+                        alt="default profile"
+                        class="rounded-circle m-2"
+                        style="height:7vh;width:9vh;">
+                    </a>
                     @endif
-
-                    <strong style="font-size: medium;" class="mt-3">{{ $comment->user->name }}</strong>
-                    <p class="mt-3 ms-4">{{ $comment->content }}</p>
-
-                    <form action="{{ route('comment.destroy', $comment->id) }}" method="POST" class="m-2">
-                      @csrf
-                      @method('DELETE')
-                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
+                    <div>
+                      <strong>{{ $comment->user->name }}</strong>
+                      <p class="mb-1">{{ $comment->content }}</p>
+                      <div class="d-flex">
+                        <small class="text-muted mt-3" style="font-size: 14px;">{{ $comment->created_at->diffForHumans()}}</small>
+                        @if(Auth::id() == $comment->user->id)
+                        <form action="{{ route('comment.destroy', $comment->id) }}" method="POST" class="m-2">
+                          @csrf
+                          @method('DELETE')
+                          <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                        </form>
+                        @endif
+                      </div>
+                    </div>
                   </div>
-                  <small class="text-muted" style="font-size: 14px;">{{ $comment->created_at->diffForHumans()}}</small>
                 </li>
                 @endforeach
                 @else
-                <li>No comments found.</li>
+                <li class="ms-5">No comments found.</li>
                 @endif
-
               </ul>
             </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-  </div>
-  </div>
-  </div>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     function toggleLike(photoId) {
-      // alert("Yes Click howa hy");
       $.ajax({
         url: `/photo/${photoId}/like`,
         type: 'POST',
@@ -292,8 +177,6 @@
           _token: '{{ csrf_token() }}'
         },
         success: function(response) {
-          // alert("SUcces h ogya");
-          // Update the like icon color and like count
           if (response.liked) {
             $('#like-icon').addClass('text-danger').removeClass('text-muted');
           } else {
@@ -302,14 +185,11 @@
           $('#like-count').text(response.likesCount + ' likes');
         },
         error: function(error) {
-          //alert("error");
           console.error('Error:', error);
         }
       });
     }
   </script>
-
-
 </body>
 
 </html>

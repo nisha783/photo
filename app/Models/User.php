@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 // implements MustVerifyEmail
@@ -55,10 +56,21 @@ class User extends Authenticatable
     }
     public function dp()
     {
-        return $this->hasOne(dp::class);
+        return $this->hasOne(Dp::class);
     }
     public function photos()
     {
         return $this->hasMany(Photo::class); // Each user can upload multiple photos
     }
+    // In your User or Dp model
+protected static function booted()
+{
+    static::deleting(function ($dp) {
+        // Delete the profile picture when the user is deleted
+        if ($dp->filepath) {
+            Storage::disk('public')->delete($dp->filepath);  // Deletes the file
+        }
+    });
+}
+
 }

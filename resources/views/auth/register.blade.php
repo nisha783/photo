@@ -16,20 +16,18 @@
                 <div class="card mt-5 shadow border-0">
                     <div class="card-body">
                         @if (session('success'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('success') }}
-                        </div>
+                            <div class="alert alert-success" role="alert">
+                                {{ session('success') }}
+                            </div>
                         @endif
                         @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                <li>
-                                    {{ $error }}
-                                </li>
-                                @endforeach
-                            </ul>
-                        </div>
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
                         @endif
 
                         <form method="POST" action="{{ route('register') }}">
@@ -37,15 +35,17 @@
                             <div class="justify-content-center">
                                 <h3 class="text-center fw-bold"> Photo Collection</h3>
                             </div>
-                            <di class="form-group mb-3 p-3">
+                            <div class="form-group mb-3 p-3">
                                 <div class="row">
                                     <div class="col-12">
                                         <label for="name">Name</label>
                                         <input type="text" name="name" class="form-control" placeholder="Enter name" style="color: grey; font-size: small;">
                                     </div>
                                 </div>
-                                <label for="">Email</label>
-                                <input type="text" class="form-control" name="email" placeholder="Enter email" style="color: grey; font-size: small;">
+                                <div class="col-12">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" name="email" placeholder="Enter email" style="color: grey; font-size: small;">
+                                </div>
                                 <div class="row">
                                     <div class="col-12">
                                         <label for="password">Password</label>
@@ -53,7 +53,7 @@
                                     </div>
                                     <div class="col-12">
                                         <label for="password_confirmation">Confirm Password</label>
-                                        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="password_confirmation" style="color: grey; font-size: small;">
+                                        <input type="password" class="form-control" name="password_confirmation" id="password_confirmation" placeholder="Confirm password" style="color: grey; font-size: small;">
                                     </div>
                                 </div>
                                 <div class="col-12">
@@ -66,14 +66,14 @@
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <button type="submit" class="btn btn-warning text-white mt-4">Sign In</button>
-                                    <a class="ps-3 mt-5 text-dark" href="{{ route('login') }}">Already have Register?</a>
+                                    <a class="ps-3 mt-5 text-dark" href="{{ route('login') }}">Already have an account?</a>
                                 </div>
+                            </div>
+                        </form>
                     </div>
-                    </form>
                 </div>
             </div>
         </div>
-    </div>
     </div>
 </body>
 

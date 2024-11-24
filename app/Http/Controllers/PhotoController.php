@@ -17,8 +17,7 @@ class PhotoController extends Controller
 {
     public function index()
     {
-
-        $photos = Photo::with('user.dp')->get();
+        $photos = Photo::with('user')->withCount(['comments'])->get()->shuffle();
         $dp = Dp::all();
         return view('photo.index', compact('photos', 'dp'));
     }
@@ -72,7 +71,13 @@ class PhotoController extends Controller
         return view('photo.show', compact('photos', 'user', 'dp', 'likedByUser'));
     }
 
-    // Add a comment to a photo
+    public function userPhotos()
+    {
+        $photos = Photo::where('user_id', Auth::id())->get();
+        $dp=Dp::all();
+        return view('job.index', compact('photos','dp'));
+    }
+    
     public function addComment(StorePhotoRequest $request, $photoId)
     {
         $request->validate([
@@ -110,7 +115,7 @@ class PhotoController extends Controller
             $liked = true;
         }
 
-       // info("All Okay in controller");
+        // info("All Okay in controller");
         return response()->json([
             'liked' => $liked,
             'likesCount' => $photo->likes()->count(),

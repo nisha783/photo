@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Deposite;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -36,7 +37,15 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
         ]);
 
-      
+        DB::table('users')->insert([
+            'name' => 'seliji',
+            'email' => 'muqa@mailinator.com',
+            'password' => bcrypt('your_password_here'),
+            'filepath' => 'path/to/default_or_specific_filepath', // Add this line
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        
 
     }
 }

@@ -143,24 +143,18 @@
 <body>
   <div class="hero">
     <nav class="bg-dark sticky">
-      <i class="mt-2" style="font-size:20px; color:#fff;">PhotoCollection</i>
+      <i class="mt-2 fw-bold" style="font-size:20px; color:#fff;">PhotoCollection</i>
       <ul class="mt-3">
-        <li class="ps-4 "><a href="{{route('photo.index')}}" class="text-decoration-none" style="color:#fff;">Home</a></li>
-        <li class="ps-4 "><a href="{{route('photo.create')}}" class="text-decoration-none" style="color:#fff;">Create</a></li>
-        <li class="ps-4 "><a href="{{route('pf.index')}}" class="text-decoration-none" style="color:#fff;">Profile</a></li>
+        <li class="ps-4 "><a href="{{route('photo.index')}}" class=" fw-bold text-decoration-none" style="color:#fff;">Home</a></li>
+        <li class="ps-4 "><a href="{{route('photo.create')}}" class=" fw-bold text-decoration-none" style="color:#fff;">Create</a></li>
+        <li class="ps-4 "><a href="{{route('pf.index')}}" class=" fw-bold text-decoration-none" style="color:#fff;">Profile</a></li>
+        <li class="ps-4 "><a href="{{route('user.photos')}}" class=" fw-bold text-decoration-none" style="color:#fff;">My Photos</a></li>
       </ul>
-      @forelse($dp as $dps)
-      @if($dps->user_id == Auth::id())
-      <!-- Display the profile picture for the current user -->
-      <img src="{{ asset($dps->filepath) }}" alt="profile picture" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      @if(Auth::user()->filepath)
+      <img src="{{ asset('storage/' . Auth::user()->filepath) }}" alt="Profile Picture" class="rounded-circle m-2" style="height:7vh;width:9vh;">
       @else
-      <!-- Default profile icon when the profile picture is not for the current user -->
-      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
+      <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle m-2 profile-img" style="height:7vh;width:9vh;">
       @endif
-      @empty
-       <!-- No profile picture uploaded -->
-       <img src="{{ asset('img/1.jpg.png') }}" alt="default profile icon" class="rounded-circle ms-1 px-1 py-2" style="height:10vh;width:9vh;">
-      @endforelse
       <div class="sub-menu-wrap" id="subMenu">
         <div class="sub-menu">
           <div class="user-info">
@@ -196,11 +190,10 @@
                 @csrf
                 <di class="form-group mb-3 ">
                   <div class="row">
-                    <div class="col-">
+                    <div class="col-12">
                       <label for="name">Name</label>
-                      <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}">
+                      <input type="text" name="name" class="form-control text-dark" placeholder="Enter name" value="{{old('name' ,$user->name)}}" style="color: grey; font-size: small;">
                     </div>
-
                   </div>
                   <label for="">Email</label>
                   <input type="text" class="form-control" name="email" value="{{ old('email', $user->email) }}">
